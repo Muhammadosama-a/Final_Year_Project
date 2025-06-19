@@ -1,0 +1,46 @@
+# Initialize array for directories
+$dirs = @()
+
+# Add standard system-wide directories
+$systemDirs = @(
+    "C:\Windows",
+    "C:\Windows\System32",
+    "C:\Windows\Temp",
+    "$env:ProgramFiles",
+    "$env:ProgramFiles(x86)",
+    "$env:ProgramData"
+)
+
+foreach ($path in $systemDirs) {
+    if (Test-Path $path) {
+        $dirs += $path
+    }
+}
+
+# Add per-user directories (Documents, Desktop, etc.)
+Get-ChildItem -Path "C:\Users" -Directory | ForEach-Object {
+    $userPath = $_.FullName
+    $subDirs = @("Desktop", "Documents", "Downloads", "AppData\Local\Temp", "AppData\Roaming")
+    
+    foreach ($sub in $subDirs) {
+        $fullPath = Join-Path -Path $userPath -ChildPath $sub
+        if (Test-Path $fullPath) {
+            $dirs += $fullPath
+        }
+    }
+}
+
+# Remove duplicates and sort
+$uniqueDirs = $dirs | Sort-Object -Unique
+
+# Convert to Wazuh FIM XML format
+$wazuhFormatted = $uniqueDirs | ForEach-Object {
+    "<directories check_all=`"yes`" report_changes=`"yes`" realtime=`"yes`">$_</directories>"
+}
+
+# Save to Desktop as XML-friendly config list
+$outFile = "$env:USERPROFILE\Desktop\fim_directories_config.xml"
+$wazuhFormatted | Out-File -FilePath $outFile -Encoding UTF8
+
+# Also show the output in console
+$wazuhFormatted

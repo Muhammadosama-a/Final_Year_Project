@@ -1,0 +1,13 @@
+Anomalous file creation detection: 
+
+
+Timestamp 
+Agent (name, ip, id) 
+Location 
+Path 
+Syscheck.(size_after & size_before) 
+rule.description 
+manager.name 
+syscheck.event 
+decoder.name 
+id

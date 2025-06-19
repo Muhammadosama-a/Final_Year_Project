@@ -1,0 +1,17 @@
+Suspicious logins Attempt
+
+
+
+
+rule.id
+agent.ip
+data.win.system.eventID
+data.win.eventdata.logonType
+data.win.eventdata.subjectUserName
+data.win.eventdata.logonGuid
+data.win.eventdata.logonProcessName
+data.win.eventdata.authenticationPackageName
+rule.firedtimes
+data.win.system.systemTime
+rule.level
+data.win.eventdata.targetUserName

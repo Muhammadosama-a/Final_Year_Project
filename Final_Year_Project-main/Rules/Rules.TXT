@@ -1,0 +1,107 @@
+<group name="authentication_failed,authentication_success,">
+  <rule id="100001" level="10">
+  
+    <field name="data.win.system.eventID">^529$|^4625$</field>
+    <description>Multiple failed login attempts failuer(Custom)</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+  </rule>
+ </group>
+ 
+ 
+ 
+<!-- Failed and Then Successful Login Detect if an account has a failed login (4625) immediately followed by a successful login (4624) within 1 minute.-->
+<!--<group name="authentication,windows,login_failure,login_success">-->
+<!--  <rule id="100012" level="13" >-->
+<!--    <decoded_as>json</decoded_as>-->
+<!--    <field name="data.win.system.eventID">^529$|^4625$</field>-->
+<!--    <description>Windows Failed Login (Custom)</description>-->
+<!--    <group>authentication,windows,login_failure</group>-->
+<!--  </rule>-->
+ 
+<!--  <rule id="100013" level="13" timeframe="60" overwrite="yes">-->
+<!--    <if_sid>100012</if_sid>-->
+<!--    <decoded_as>json</decoded_as>-->
+<!--    <field name="data.win.system.eventID">4624</field>-->
+<!--    <description>Windows Successful Login after Failed Attempt (Custom)</description>-->
+<!--    <group>authentication,windows,login_success</group>-->
+<!--  </rule>-->
+<!--</group>-->
+
+
+<group name="authentication,windows,">
+  <rule id="100001" level="14" frequency="3" timeframe="60" overwrite="yes">
+    <if_matched_sid>60122</if_matched_sid>
+	<same_field>win.eventdata.targetUserName</same_field>
+    <description>Windows - Multiple failed login attempts (Custom cc)</description>
+  </rule>
+
+  <rule id="100002" level="14" timeframe="30">
+    <if_matched_sid>100001</if_matched_sid>
+    <if_group>authentication_success</if_group>
+	<same_field>win.eventdata.targetUserName</same_field>
+    <description>Windows - Successful login after multiple failed login attempts (Custom)</description>
+  </rule>
+</group>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Monitoring Logon Attempts from Specific IP Addresses-->
+<group name="authentication,windows">
+  <rule id="100103" level="6" overwrite="yes">
+    <field name="data.win.system.eventID">4624|4625</field>
+    <field name="data.win.eventdata.ipAddress">172.12.1.58</field>
+    <description>Logon attempt from IP address 172.12.1.58 (Custom).</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+  </rule>
+</group>
+
+
+<!-- within 10 Mins 5 failed login attempts followed by a success attempt from same user -->
+<group name="windows,windows_security,">
+  <rule id="600001" level="14" frequency="5" timeframe="600" overwrite="yes">
+    <if_matched_sid>60122</if_matched_sid>
+    <same_field>data.win.eventdata.targetUserName</same_field>
+    <description>Windows: Multiple Failed Login attempts for same user.(Custom)</description>
+  </rule>
+
+  <rule id="600002" level="14" overwrite="yes">
+    <if_matched_sid>600001</if_matched_sid>
+    <field name="data.win.system.eventID">^4624$</field>
+    <same_field>data.win.eventdata.targetUserName</same_field>
+    <description>Windows: Brute Force attack.(Custom)</description>
+  </rule>
+</group>
+
+
+
+
+
+
+
+  
+ 
